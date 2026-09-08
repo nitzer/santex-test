@@ -7,7 +7,7 @@ import type { ActionType } from '../src/types/domain';
 const FIXTURE = fileURLToPath(new URL('./fixtures/platform-oncall-runbook.md', import.meta.url));
 
 interface Scenario {
-  /** The title the API seeds this type's demo action with. */
+  /** The title the API seeds this type's example action with. */
   title: string;
   /** Fills and submits the form this type resolves to. */
   complete: (page: Page) => Promise<void>;

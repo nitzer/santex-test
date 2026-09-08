@@ -1,6 +1,6 @@
 # api — Pending Actions
 
-FastAPI + SQLModel backend for the pending-actions demo. Contract: `specs/domain.md`.
+FastAPI + SQLModel backend for Pending Actions. Contract: `specs/domain.md`.
 
 ```bash
 uv sync                                  # install deps
@@ -9,7 +9,7 @@ uv run fastapi dev src/api/main.py       # dev server on :8000 (docs at /docs)
 uv run python -m api.main export-openapi openapi.json
 ```
 
-The DB is created and seeded with one demo action per type on startup, only if the `action`
+The DB is created and seeded with one example action per type on startup, only if the `action`
 table is empty. The seed goes through `ActionService.create_action`, so a seed payload that
 drifts from its handler's `creation_model` fails loudly instead of inserting a bad row.
 

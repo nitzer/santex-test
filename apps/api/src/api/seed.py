@@ -56,7 +56,7 @@ SEED_ACTIONS: list[dict[str, Any]] = [
 
 
 def seed(session: Session) -> int:
-    """Insert the demo actions once, through the same path as POST /actions.
+    """Insert the example actions once, through the same path as POST /actions.
 
     Going through the service means a seed payload that drifts from its handler's
     `creation_model` fails loudly instead of landing malformed rows in the DB.

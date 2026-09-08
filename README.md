@@ -2,7 +2,7 @@
 
 An internal operations tool: a queue of pending actions (approve an expense, review a deployment, upload documentation, complete an onboarding) that users can create, inspect and complete.
 
-In the UI they are called **tasks**; in the API and the code they are **actions** (the assignment's word). Same thing.
+In the UI they are called **tasks**; in the API and the code they are **actions**. Same thing.
 
 Built with Claude Code as a pair programmer; the architecture, the scope decisions and the reviews are mine.
 
@@ -71,7 +71,7 @@ The domain contract, the ER diagram and the decisions below live in [`specs/doma
 - **One table with a JSON `payload`, not a table per type.** Adding a type does not touch the schema, and the polymorphism lives in code where Strategy handles it well. The cost: no per-column integrity, validation happens only in Pydantic, and querying by a payload field is awkward. For a queue that is read by id and by status, I took that deal.
 - **Creation form generated from JSON Schema, not one form per type.** Zero frontend code per new type, and the backend stays the single source of truth for field names, titles and hints. The cost: a generic look, a renderer that understands a subset of JSON Schema, and a payload the compiler cannot type inside the form (the API re-validates it). Completion kept per-type forms because those *do* want bespoke widgets.
 - **`/complete` and `/upload` as separate endpoints, not one polymorphic one.** Each keeps its natural content type and is documented precisely in OpenAPI; the client has to know which one to call, which the registry tells it. One endpoint accepting both JSON and multipart would have been smaller and vaguer.
-- SQLite, no migrations tool, no pagination: right-sized for the exercise, all of them one-liners to revisit.
+- SQLite, no migrations tool, no pagination: right-sized for the current scope, all of them one-liners to revisit.
 
 ## If I had another day
 

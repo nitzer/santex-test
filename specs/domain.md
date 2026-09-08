@@ -91,4 +91,4 @@ Cross-cutting rules:
 
 - Actions are created via `POST /actions`; in addition, a fixed seed (one per type) runs when the API starts with an empty table, so the app can be tried immediately.
 - No authentication — single implicit actor.
-- No handling of two concurrent requests racing on the same `Idempotency-Key` (out of focus, single-user demo).
+- No handling of two concurrent requests racing on the same `Idempotency-Key` (single-operator tool; a lock would be the fix if that changes).
