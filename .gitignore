@@ -1,0 +1,23 @@
+# Node / frontend
+node_modules/
+apps/web/dist/
+apps/web/.vite/
+apps/web/test-results/
+apps/web/playwright-report/
+
+# Python / backend
+apps/api/.venv/
+**/__pycache__/
+*.pyc
+apps/api/*.db
+.pytest_cache/
+apps/api/storage/uploads/*
+!apps/api/storage/uploads/.gitkeep
+
+# Env
+.env
+.env.local
+
+# OS / editor / tooling state
+.DS_Store
+.omc/

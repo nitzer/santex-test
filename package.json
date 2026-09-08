@@ -1,0 +1,15 @@
+{
+  "name": "ops-tool",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "cd apps/api && uv run fastapi dev src/api/main.py",
+    "gen:types": "openapi-typescript apps/api/openapi.json -o apps/web/src/types/api.d.ts",
+    "test:api": "cd apps/api && uv run pytest",
+    "test:web": "pnpm --filter web test",
+    "test:e2e": "pnpm --filter web test:e2e"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.0"
+  }
+}

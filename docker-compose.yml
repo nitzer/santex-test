@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./apps/api
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      CORS_ORIGINS: "http://localhost:${WEB_PORT:-5173}"
+    volumes:
+      - api-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: "http://localhost:${API_PORT:-8000}"
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api-data:

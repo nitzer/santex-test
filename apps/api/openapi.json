@@ -1,0 +1,757 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pending Actions API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/action-types": {
+      "get": {
+        "tags": [
+          "action-types"
+        ],
+        "summary": "List Action Types",
+        "description": "Derived from the handler registry: a new handler shows up here for free.",
+        "operationId": "list_action_types_action_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ActionTypeDescriptor"
+                  },
+                  "type": "array",
+                  "title": "Response List Action Types Action Types Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions": {
+      "get": {
+        "tags": [
+          "actions"
+        ],
+        "summary": "List Actions",
+        "operationId": "list_actions_actions_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ActionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ActionType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionRead"
+                  },
+                  "title": "Response List Actions Actions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "actions"
+        ],
+        "summary": "Create Action",
+        "operationId": "create_action_actions_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/{action_id}": {
+      "get": {
+        "tags": [
+          "actions"
+        ],
+        "summary": "Get Action",
+        "operationId": "get_action_actions__action_id__get",
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/{action_id}/complete": {
+      "post": {
+        "tags": [
+          "actions"
+        ],
+        "summary": "Complete Action",
+        "operationId": "complete_action_actions__action_id__complete_post",
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Payload",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "approved": {
+                        "title": "Approved",
+                        "type": "boolean"
+                      },
+                      "notes": {
+                        "title": "Notes",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "approved",
+                      "notes"
+                    ],
+                    "title": "DeploymentReviewComplete",
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "approved": {
+                        "title": "Approved",
+                        "type": "boolean"
+                      },
+                      "comment": {
+                        "title": "Comment",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "approved",
+                      "comment"
+                    ],
+                    "title": "ExpenseApprovalComplete",
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "completed_steps": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "title": "Completed Steps",
+                        "type": "array"
+                      }
+                    },
+                    "required": [
+                      "completed_steps"
+                    ],
+                    "title": "OnboardingComplete",
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/actions/{action_id}/upload": {
+      "post": {
+        "tags": [
+          "actions"
+        ],
+        "summary": "Upload Action Document",
+        "operationId": "upload_action_document_actions__action_id__upload_post",
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_action_document_actions__action_id__upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionCreate": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "requester": {
+            "type": "string",
+            "title": "Requester"
+          },
+          "payload": {
+            "title": "Payload",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentReviewCreate"
+              },
+              {
+                "$ref": "#/components/schemas/DocumentationUploadCreate"
+              },
+              {
+                "$ref": "#/components/schemas/ExpenseApprovalCreate"
+              },
+              {
+                "$ref": "#/components/schemas/OnboardingCreate"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "description",
+          "requester",
+          "payload"
+        ],
+        "title": "ActionCreate",
+        "description": "The union documents the accepted shapes; the service re-validates `payload`\nagainst the `creation_model` of the declared `type`, which is authoritative."
+      },
+      "ActionRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "requester": {
+            "type": "string",
+            "title": "Requester"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActionStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "title",
+          "description",
+          "requester",
+          "status",
+          "created_at",
+          "completed_at",
+          "payload",
+          "result"
+        ],
+        "title": "ActionRead",
+        "description": "Wire representation of an Action. Per-type bodies live with their handler."
+      },
+      "ActionStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "completed"
+        ],
+        "title": "ActionStatus"
+      },
+      "ActionType": {
+        "type": "string",
+        "enum": [
+          "expense_approval",
+          "deployment_review",
+          "documentation_upload",
+          "onboarding"
+        ],
+        "title": "ActionType"
+      },
+      "ActionTypeDescriptor": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "completion": {
+            "type": "string",
+            "enum": [
+              "json",
+              "file"
+            ],
+            "title": "Completion"
+          },
+          "schema_name": {
+            "type": "string",
+            "title": "Schema Name"
+          },
+          "payload_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload Schema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "label",
+          "completion",
+          "schema_name",
+          "payload_schema"
+        ],
+        "title": "ActionTypeDescriptor",
+        "description": "What the UI needs to offer a type and render its creation form."
+      },
+      "Body_upload_action_document_actions__action_id__upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_action_document_actions__action_id__upload_post"
+      },
+      "DeploymentReviewCreate": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Servicio"
+          },
+          "version": {
+            "type": "string",
+            "title": "Versi\u00f3n"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Entorno",
+            "description": "Ej. staging, production."
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "version",
+          "environment"
+        ],
+        "title": "DeploymentReviewCreate"
+      },
+      "DocumentationUploadCreate": {
+        "properties": {
+          "document_name": {
+            "type": "string",
+            "title": "Nombre del documento"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_name"
+        ],
+        "title": "DocumentationUploadCreate"
+      },
+      "ExpenseApprovalCreate": {
+        "properties": {
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Monto",
+            "description": "Importe del gasto, mayor a cero."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Moneda",
+            "description": "C\u00f3digo ISO de 3 letras, ej. ARS."
+          },
+          "receipt_url": {
+            "type": "string",
+            "format": "uri",
+            "title": "Comprobante (URL)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount",
+          "currency",
+          "receipt_url"
+        ],
+        "title": "ExpenseApprovalCreate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "OnboardingCreate": {
+        "properties": {
+          "employee_name": {
+            "type": "string",
+            "title": "Nombre del empleado"
+          },
+          "checklist": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Checklist",
+            "description": "Pasos a completar durante el onboarding."
+          }
+        },
+        "type": "object",
+        "required": [
+          "employee_name",
+          "checklist"
+        ],
+        "title": "OnboardingCreate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
