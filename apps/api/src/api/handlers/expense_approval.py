@@ -7,11 +7,11 @@ from api.models import Action, ActionType
 
 
 class ExpenseApprovalCreate(BaseModel):
-    amount: float = Field(gt=0, title="Monto", description="Importe del gasto, mayor a cero.")
+    amount: float = Field(gt=0, title="Amount", description="Expense total, greater than zero.")
     currency: str = Field(
-        pattern=r"^[A-Z]{3}$", title="Moneda", description="Código ISO de 3 letras, ej. ARS."
+        pattern=r"^[A-Z]{3}$", title="Currency", description="3-letter ISO code, e.g. USD."
     )
-    receipt_url: str = Field(title="Comprobante (URL)", json_schema_extra={"format": "uri"})
+    receipt_url: str = Field(title="Receipt (URL)", json_schema_extra={"format": "uri"})
 
 
 class ExpenseApprovalComplete(BaseModel):
@@ -21,7 +21,7 @@ class ExpenseApprovalComplete(BaseModel):
 
 @register(ActionType.EXPENSE_APPROVAL)
 class ExpenseApprovalHandler(JsonCompletionHandler):
-    label = "Aprobar gasto"
+    label = "Approve expense"
     creation_model = ExpenseApprovalCreate
     payload_model = ExpenseApprovalComplete
 

@@ -10,12 +10,12 @@ from api.models import Action, ActionType
 
 
 class DocumentationUploadCreate(BaseModel):
-    document_name: str = Field(title="Nombre del documento")
+    document_name: str = Field(title="Document name")
 
 
 @register(ActionType.DOCUMENTATION_UPLOAD)
 class DocumentationUploadHandler(FileCompletionHandler):
-    label = "Subir documentación"
+    label = "Upload documentation"
     creation_model = DocumentationUploadCreate
 
     def __init__(self, upload_dir: Path | None = None) -> None:

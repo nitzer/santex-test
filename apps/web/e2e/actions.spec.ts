@@ -4,7 +4,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 import type { ActionType } from '../src/types/domain';
 
-const FIXTURE = fileURLToPath(new URL('./fixtures/runbook-oncall-plataforma.md', import.meta.url));
+const FIXTURE = fileURLToPath(new URL('./fixtures/platform-oncall-runbook.md', import.meta.url));
 
 interface Scenario {
   /** The title the API seeds this type's demo action with. */
@@ -24,50 +24,50 @@ interface Scenario {
  */
 const SCENARIOS: Record<ActionType, Scenario> = {
   expense_approval: {
-    title: 'Aprobar gasto de viaje a cliente',
+    title: 'Approve client trip expense',
     complete: async (page) => {
-      await page.getByRole('textbox', { name: 'Comentario' }).fill('Dentro de política');
-      await page.getByRole('button', { name: 'Resolver gasto' }).click();
+      await page.getByRole('textbox', { name: 'Comment' }).fill('Within policy');
+      await page.getByRole('button', { name: 'Resolve expense' }).click();
     },
     expectResult: async (result) => {
-      await expect(result.getByText('Dentro de política')).toBeVisible();
-      await expect(result.getByText('Sí')).toBeVisible();
+      await expect(result.getByText('Within policy')).toBeVisible();
+      await expect(result.getByText('Yes')).toBeVisible();
     },
   },
   deployment_review: {
-    title: 'Revisar deploy de checkout-api a produccion',
+    title: 'Review checkout-api deployment to production',
     complete: async (page) => {
-      await page.getByRole('checkbox', { name: 'Aprobar el deploy' }).uncheck();
-      await page.getByRole('textbox', { name: 'Notas' }).fill('Falta plan de rollback');
-      await page.getByRole('button', { name: 'Resolver review' }).click();
+      await page.getByRole('checkbox', { name: 'Approve the deployment' }).uncheck();
+      await page.getByRole('textbox', { name: 'Notes' }).fill('Missing rollback plan');
+      await page.getByRole('button', { name: 'Resolve review' }).click();
     },
     expectResult: async (result) => {
-      await expect(result.getByText('Falta plan de rollback')).toBeVisible();
+      await expect(result.getByText('Missing rollback plan')).toBeVisible();
       await expect(result.getByText('No')).toBeVisible();
     },
   },
   documentation_upload: {
-    title: 'Subir el runbook de incidentes',
+    title: 'Upload the incident runbook',
     complete: async (page) => {
-      await page.getByLabel('Documento').setInputFiles(FIXTURE);
-      await page.getByRole('button', { name: 'Subir documento' }).click();
+      await page.getByLabel('File').setInputFiles(FIXTURE);
+      await page.getByRole('button', { name: 'Upload document' }).click();
     },
     expectResult: async (result) => {
       // The API answers with what it actually wrote to disk.
-      await expect(result.getByText('runbook-oncall-plataforma.md')).toBeVisible();
+      await expect(result.getByText('platform-oncall-runbook.md')).toBeVisible();
       await expect(result.getByText('text/markdown')).toBeVisible();
     },
   },
   onboarding: {
-    title: 'Onboarding de Sofia Cabrera',
+    title: 'Onboard Sofia Cabrera',
     complete: async (page) => {
-      await page.getByRole('checkbox', { name: 'Crear cuenta de correo' }).check();
-      await page.getByRole('checkbox', { name: 'Asignar notebook' }).check();
-      await page.getByRole('button', { name: 'Registrar pasos' }).click();
+      await page.getByRole('checkbox', { name: 'Create email account' }).check();
+      await page.getByRole('checkbox', { name: 'Assign laptop' }).check();
+      await page.getByRole('button', { name: 'Complete onboarding' }).click();
     },
     expectResult: async (result) => {
-      await expect(result.getByText('Crear cuenta de correo')).toBeVisible();
-      await expect(result.getByText('Asignar notebook')).toBeVisible();
+      await expect(result.getByText('Create email account')).toBeVisible();
+      await expect(result.getByText('Assign laptop')).toBeVisible();
     },
   },
 };
@@ -76,8 +76,8 @@ const scenarios = Object.entries(SCENARIOS) as [ActionType, Scenario][];
 
 function groups(page: Page) {
   return {
-    pending: page.getByRole('region', { name: 'Pendientes' }),
-    completed: page.getByRole('region', { name: 'Completadas' }),
+    pending: page.getByRole('region', { name: 'Pending' }),
+    completed: page.getByRole('region', { name: 'Completed' }),
     detail: page.getByRole('article'),
   };
 }
@@ -89,8 +89,8 @@ function groups(page: Page) {
  * queue: another spec file creating tasks against the same server must not be able to
  * break them, whichever order the files happen to run in.
  */
-test.describe.serial('cola de acciones', () => {
-  test('lista las cuatro acciones del seed como pendientes', async ({ page }) => {
+test.describe.serial('action queue', () => {
+  test('lists the four seeded actions as pending', async ({ page }) => {
     await page.goto('/');
     const { pending, completed } = groups(page);
 
@@ -100,7 +100,7 @@ test.describe.serial('cola de acciones', () => {
     }
   });
 
-  test('completa una acción de cada tipo y la mueve a completadas', async ({ page }) => {
+  test('completes one action per type and moves it to completed', async ({ page }) => {
     await page.goto('/');
     const { pending, completed, detail } = groups(page);
 
@@ -114,7 +114,7 @@ test.describe.serial('cola de acciones', () => {
         // The API's answer is what the screen now shows: status, section and result.
         await expect(completed.getByRole('button', { name: scenario.title })).toBeVisible();
         await expect(pending.getByRole('button', { name: scenario.title })).toHaveCount(0);
-        await scenario.expectResult(detail.getByRole('region', { name: 'Resultado' }));
+        await scenario.expectResult(detail.getByRole('region', { name: 'Result' }));
       });
     }
 
@@ -125,7 +125,7 @@ test.describe.serial('cola de acciones', () => {
   });
 });
 
-test('un doble click no envía la acción dos veces', async ({ page }) => {
+test('a double click does not submit the action twice', async ({ page }) => {
   /*
    * Against a stubbed API rather than the real one, for two reasons: the response can be
    * held open for as long as the assertions need, and the number of requests that left
@@ -142,8 +142,8 @@ test('un doble click no envía la acción dos veces', async ({ page }) => {
   const pendingAction = {
     id: 'stub-1',
     type: 'expense_approval',
-    title: 'Aprobar gasto de viaje a cliente',
-    description: 'Vuelo y hotel para la visita on-site.',
+    title: 'Approve client trip expense',
+    description: 'Flight and hotel for the on-site visit.',
     requester: 'lucia.mendez@ops.example',
     status: 'pending',
     created_at: '2026-01-15T10:00:00Z',
@@ -176,7 +176,7 @@ test('un doble click no envía la acción dos veces', async ({ page }) => {
           ...pendingAction,
           status: 'completed',
           completed_at: '2026-01-15T11:00:00Z',
-          result: { approved: true, comment: 'Dentro de política' },
+          result: { approved: true, comment: 'Within policy' },
         },
       });
     }
@@ -185,13 +185,13 @@ test('un doble click no envía la acción dos veces', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: pendingAction.title }).click();
-  await page.getByRole('textbox', { name: 'Comentario' }).fill('Dentro de política');
+  await page.getByRole('textbox', { name: 'Comment' }).fill('Within policy');
 
-  const submit = page.getByRole('button', { name: 'Resolver gasto' });
+  const submit = page.getByRole('button', { name: 'Resolve expense' });
   await submit.click();
 
   // While the request is in flight the button says so and refuses further input.
-  const sending = page.getByRole('button', { name: 'Enviando…' });
+  const sending = page.getByRole('button', { name: 'Sending…' });
   await expect(sending).toBeVisible();
   await expect(sending).toBeDisabled();
 
@@ -202,7 +202,7 @@ test('un doble click no envía la acción dos veces', async ({ page }) => {
 
   releaseResponse();
 
-  const result = page.getByRole('article').getByRole('region', { name: 'Resultado' });
-  await expect(result.getByText('Dentro de política')).toBeVisible();
+  const result = page.getByRole('article').getByRole('region', { name: 'Result' });
+  await expect(result.getByText('Within policy')).toBeVisible();
   expect(posts).toBe(1);
 });

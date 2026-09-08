@@ -45,7 +45,7 @@ export function StringListField({
                 className="button button--ghost button--small"
                 onClick={() => onChange(items.filter((_, at) => at !== index))}
               >
-                Quitar <span className="sr-only">{item}</span>
+                Remove <span className="sr-only">{item}</span>
               </button>
             </li>
           ))}
@@ -57,7 +57,7 @@ export function StringListField({
           id={id}
           type="text"
           value={draft}
-          aria-label={`${label}: nuevo ítem`}
+          aria-label={`${label}: new item`}
           aria-invalid={invalid}
           aria-describedby={describedBy}
           onChange={(event) => setDraft(event.target.value)}
@@ -75,7 +75,7 @@ export function StringListField({
           onClick={add}
           disabled={draft.trim() === ''}
         >
-          Agregar
+          Add
         </button>
       </div>
     </div>

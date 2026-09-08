@@ -12,7 +12,7 @@ interface JsonFactsProps {
  */
 export function JsonFacts({ facts }: JsonFactsProps) {
   const entries = Object.entries(facts);
-  if (entries.length === 0) return <p className="facts__empty">Sin datos.</p>;
+  if (entries.length === 0) return <p className="facts__empty">No data.</p>;
 
   return (
     <dl className="facts">
@@ -27,7 +27,7 @@ export function JsonFacts({ facts }: JsonFactsProps) {
 }
 
 function renderValue(value: unknown) {
-  if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (value === null || value === undefined || value === '') return '—';
   if (Array.isArray(value)) {
     return (
@@ -43,7 +43,7 @@ function renderValue(value: unknown) {
 
 function formatScalar(value: unknown): string {
   if (typeof value === 'string' || typeof value === 'number') return String(value);
-  if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   return JSON.stringify(value);
 }
 

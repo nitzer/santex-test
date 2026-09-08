@@ -13,9 +13,9 @@ export function ActionsList({ actions, selectedId, onSelect }: ActionsListProps)
   const completed = actions.filter((action) => action.status === 'completed');
 
   return (
-    <nav className="actions" aria-label="Tareas">
-      <Group title="Pendientes" actions={pending} selectedId={selectedId} onSelect={onSelect} />
-      <Group title="Completadas" actions={completed} selectedId={selectedId} onSelect={onSelect} />
+    <nav className="actions" aria-label="Tasks">
+      <Group title="Pending" actions={pending} selectedId={selectedId} onSelect={onSelect} />
+      <Group title="Completed" actions={completed} selectedId={selectedId} onSelect={onSelect} />
     </nav>
   );
 }
@@ -31,7 +31,7 @@ function Group({ title, actions, selectedId, onSelect }: GroupProps) {
         {title} <span className="actions__count">{actions.length}</span>
       </h2>
       {actions.length === 0 ? (
-        <p className="actions__empty">Nada por acá.</p>
+        <p className="actions__empty">Nothing here.</p>
       ) : (
         <ul className="actions__list">
           {actions.map((action) => (

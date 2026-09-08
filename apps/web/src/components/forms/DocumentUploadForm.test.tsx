@@ -20,8 +20,8 @@ describe('DocumentUploadForm', () => {
     const user = userEvent.setup();
     render(<DocumentUploadForm action={action} onCompleted={vi.fn()} />);
 
-    const input = screen.getByLabelText(/documento/i);
-    const submit = screen.getByRole('button', { name: /subir documento/i });
+    const input = screen.getByLabelText(/file/i);
+    const submit = screen.getByRole('button', { name: /upload document/i });
     expect(input).toHaveAttribute('type', 'file');
     expect(submit).toBeDisabled();
 
@@ -37,8 +37,8 @@ describe('DocumentUploadForm', () => {
     const user = userEvent.setup();
 
     render(<DocumentUploadForm action={action} onCompleted={onCompleted} />);
-    await user.upload(screen.getByLabelText(/documento/i), makeFile());
-    await user.click(screen.getByRole('button', { name: /subir documento/i }));
+    await user.upload(screen.getByLabelText(/file/i), makeFile());
+    await user.click(screen.getByRole('button', { name: /upload document/i }));
 
     const request = lastRequest(fetchSpy);
     expect(request.url).toContain(`/actions/${action.id}/upload`);
@@ -58,8 +58,8 @@ describe('DocumentUploadForm', () => {
     const user = userEvent.setup();
 
     render(<DocumentUploadForm action={action} onCompleted={vi.fn()} />);
-    await user.upload(screen.getByLabelText(/documento/i), makeFile());
-    await user.click(screen.getByRole('button', { name: /subir documento/i }));
+    await user.upload(screen.getByLabelText(/file/i), makeFile());
+    await user.click(screen.getByRole('button', { name: /upload document/i }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('is completed via /complete');
   });

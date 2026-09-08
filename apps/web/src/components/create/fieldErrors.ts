@@ -25,7 +25,7 @@ const BASE_FIELDS = new Set(['type', 'title', 'description', 'requester']);
  */
 export function toCreateErrors(caught: unknown): CreateErrors {
   if (!(caught instanceof ApiError)) {
-    return { ...NO_ERRORS, general: caught instanceof Error ? caught.message : 'Error inesperado' };
+    return { ...NO_ERRORS, general: caught instanceof Error ? caught.message : 'Unexpected error' };
   }
   if (typeof caught.detail === 'string') {
     return { ...NO_ERRORS, general: caught.detail };

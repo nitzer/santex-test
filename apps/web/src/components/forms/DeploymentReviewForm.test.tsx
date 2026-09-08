@@ -15,8 +15,8 @@ describe('DeploymentReviewForm', () => {
   it('renders the approve toggle and the notes field', () => {
     render(<DeploymentReviewForm action={action} onCompleted={vi.fn()} />);
 
-    expect(screen.getByRole('checkbox', { name: /aprobar el deploy/i })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /notas/i })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /approve the deployment/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /notes/i })).toBeInTheDocument();
   });
 
   it('posts approved and notes to /complete with an Idempotency-Key', async () => {
@@ -26,14 +26,14 @@ describe('DeploymentReviewForm', () => {
     const user = userEvent.setup();
 
     render(<DeploymentReviewForm action={action} onCompleted={onCompleted} />);
-    await user.type(screen.getByRole('textbox', { name: /notas/i }), 'Rollback probado');
-    await user.click(screen.getByRole('button', { name: /resolver review/i }));
+    await user.type(screen.getByRole('textbox', { name: /notes/i }), 'Rollback tested');
+    await user.click(screen.getByRole('button', { name: /resolve review/i }));
 
     const request = lastRequest(fetchSpy);
     expect(request.url).toContain(`/actions/${action.id}/complete`);
     expect(request.method).toBe('POST');
     expect(request.headers.get(IDEMPOTENCY_HEADER)).toBeTruthy();
-    expect(lastJsonBody(fetchSpy)).toEqual({ approved: true, notes: 'Rollback probado' });
+    expect(lastJsonBody(fetchSpy)).toEqual({ approved: true, notes: 'Rollback tested' });
     expect(onCompleted).toHaveBeenCalledWith(completed);
   });
 
@@ -57,9 +57,9 @@ describe('DeploymentReviewForm', () => {
     const user = userEvent.setup();
 
     render(<DeploymentReviewForm action={action} onCompleted={vi.fn()} />);
-    await user.click(screen.getByRole('button', { name: /resolver review/i }));
+    await user.click(screen.getByRole('button', { name: /resolve review/i }));
     expect(await screen.findByRole('alert')).toHaveTextContent('network down');
-    await user.click(screen.getByRole('button', { name: /resolver review/i }));
+    await user.click(screen.getByRole('button', { name: /resolve review/i }));
 
     expect(keys).toHaveLength(2);
     expect(keys[0]).toBeTruthy();

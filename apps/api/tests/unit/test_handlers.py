@@ -52,7 +52,7 @@ def test_action_type_descriptors_cover_every_type():
     by_type = {d["type"]: d for d in descriptors}
     assert by_type[ActionType.DOCUMENTATION_UPLOAD]["completion"] == "file"
     assert by_type[ActionType.EXPENSE_APPROVAL]["completion"] == "json"
-    assert by_type[ActionType.EXPENSE_APPROVAL]["label"] == "Aprobar gasto"
+    assert by_type[ActionType.EXPENSE_APPROVAL]["label"] == "Approve expense"
     for descriptor in descriptors:
         assert descriptor["payload_schema"]["properties"]
 

@@ -615,16 +615,16 @@
         "properties": {
           "service": {
             "type": "string",
-            "title": "Servicio"
+            "title": "Service"
           },
           "version": {
             "type": "string",
-            "title": "Versi\u00f3n"
+            "title": "Version"
           },
           "environment": {
             "type": "string",
-            "title": "Entorno",
-            "description": "Ej. staging, production."
+            "title": "Environment",
+            "description": "E.g. staging, production."
           }
         },
         "type": "object",
@@ -639,7 +639,7 @@
         "properties": {
           "document_name": {
             "type": "string",
-            "title": "Nombre del documento"
+            "title": "Document name"
           }
         },
         "type": "object",
@@ -653,19 +653,19 @@
           "amount": {
             "type": "number",
             "exclusiveMinimum": 0.0,
-            "title": "Monto",
-            "description": "Importe del gasto, mayor a cero."
+            "title": "Amount",
+            "description": "Expense total, greater than zero."
           },
           "currency": {
             "type": "string",
             "pattern": "^[A-Z]{3}$",
-            "title": "Moneda",
-            "description": "C\u00f3digo ISO de 3 letras, ej. ARS."
+            "title": "Currency",
+            "description": "3-letter ISO code, e.g. USD."
           },
           "receipt_url": {
             "type": "string",
             "format": "uri",
-            "title": "Comprobante (URL)"
+            "title": "Receipt (URL)"
           }
         },
         "type": "object",
@@ -693,7 +693,7 @@
         "properties": {
           "employee_name": {
             "type": "string",
-            "title": "Nombre del empleado"
+            "title": "Employee name"
           },
           "checklist": {
             "items": {
@@ -702,7 +702,7 @@
             "type": "array",
             "minItems": 1,
             "title": "Checklist",
-            "description": "Pasos a completar durante el onboarding."
+            "description": "Steps to complete during onboarding."
           }
         },
         "type": "object",

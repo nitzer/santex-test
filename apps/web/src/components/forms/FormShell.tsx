@@ -42,7 +42,7 @@ export function FormShell({
         </p>
       )}
       <button className="button" type="submit" disabled={submitting || disabled}>
-        {submitting ? 'Enviando…' : submitLabel}
+        {submitting ? 'Sending…' : submitLabel}
       </button>
     </form>
   );

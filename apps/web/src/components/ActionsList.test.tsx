@@ -5,13 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { makeTask } from '../test/factories';
 import { ActionsList } from './ActionsList';
 
-const pendingExpense = makeTask('expense_approval', { title: 'Aprobar gasto de viaje' });
-const pendingUpload = makeTask('documentation_upload', { title: 'Subir el runbook' });
+const pendingExpense = makeTask('expense_approval', { title: 'Approve travel expense' });
+const pendingUpload = makeTask('documentation_upload', { title: 'Upload the incident runbook' });
 const doneOnboarding = makeTask('onboarding', {
-  title: 'Onboarding de Sofia',
+  title: 'Sofia onboarding',
   status: 'completed',
   completed_at: '2026-01-16T09:00:00Z',
-  result: { completed_steps: ['Asignar notebook'] },
+  result: { completed_steps: ['Assign laptop'] },
 });
 
 const actions = [pendingExpense, doneOnboarding, pendingUpload];
@@ -24,20 +24,20 @@ describe('ActionsList', () => {
   it('splits the queue into pending and completed', () => {
     render(<ActionsList actions={actions} selectedId={null} onSelect={vi.fn()} />);
 
-    expect(groupItems(/pendientes/i).map((item) => item.textContent)).toEqual([
-      'Aprobar gasto de viajeGasto',
-      'Subir el runbookDocumento',
+    expect(groupItems(/pending/i).map((item) => item.textContent)).toEqual([
+      'Approve travel expenseExpense',
+      'Upload the incident runbookDocument',
     ]);
-    expect(groupItems(/completadas/i).map((item) => item.textContent)).toEqual([
-      'Onboarding de SofiaOnboarding',
+    expect(groupItems(/completed/i).map((item) => item.textContent)).toEqual([
+      'Sofia onboardingOnboarding',
     ]);
   });
 
   it('counts each group', () => {
     render(<ActionsList actions={actions} selectedId={null} onSelect={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: /pendientes 2/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /completadas 1/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /pending 2/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /completed 1/i })).toBeInTheDocument();
   });
 
   it('reports the clicked action to its caller', async () => {
@@ -45,7 +45,7 @@ describe('ActionsList', () => {
     const user = userEvent.setup();
     render(<ActionsList actions={actions} selectedId={null} onSelect={onSelect} />);
 
-    await user.click(screen.getByRole('button', { name: /subir el runbook/i }));
+    await user.click(screen.getByRole('button', { name: /upload the incident runbook/i }));
 
     expect(onSelect).toHaveBeenCalledWith(pendingUpload);
   });
@@ -53,11 +53,11 @@ describe('ActionsList', () => {
   it('marks the selected action as current', () => {
     render(<ActionsList actions={actions} selectedId={doneOnboarding.id} onSelect={vi.fn()} />);
 
-    expect(screen.getByRole('button', { name: /onboarding de sofia/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /sofia onboarding/i })).toHaveAttribute(
       'aria-current',
       'true',
     );
-    expect(screen.getByRole('button', { name: /aprobar gasto/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /approve travel/i })).toHaveAttribute(
       'aria-current',
       'false',
     );
@@ -66,7 +66,7 @@ describe('ActionsList', () => {
   it('says so when a group is empty', () => {
     render(<ActionsList actions={[pendingExpense]} selectedId={null} onSelect={vi.fn()} />);
 
-    const completed = screen.getByRole('region', { name: /completadas/i });
-    expect(within(completed).getByText(/nada por acá/i)).toBeInTheDocument();
+    const completed = screen.getByRole('region', { name: /completed/i });
+    expect(within(completed).getByText(/nothing here/i)).toBeInTheDocument();
   });
 });

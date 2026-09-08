@@ -8,8 +8,8 @@ import type { ActionType } from '../types/domain';
  * reaches the screen as a raw `snake_case` identifier.
  */
 export const ACTION_TYPE_LABELS: Record<ActionType, string> = {
-  expense_approval: 'Gasto',
-  deployment_review: 'Deploy',
-  documentation_upload: 'Documento',
+  expense_approval: 'Expense',
+  deployment_review: 'Deployment',
+  documentation_upload: 'Document',
   onboarding: 'Onboarding',
 };

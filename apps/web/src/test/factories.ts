@@ -19,7 +19,7 @@ const DEFAULT_PAYLOADS: { [T in ActionType]: TaskPayloadByType[T] } = {
   documentation_upload: { document_name: 'runbook-oncall-plataforma.md' },
   onboarding: {
     employee_name: 'Sofia Cabrera',
-    checklist: ['Crear cuenta de correo', 'Asignar notebook', 'Alta en el repositorio'],
+    checklist: ['Create email account', 'Assign laptop', 'Grant repository access', 'Welcome session with the team'],
   },
 };
 
@@ -41,8 +41,8 @@ export function makeTask<T extends ActionType>(
   const { payload, ...base } = overrides;
   return {
     id: `action-${sequence}`,
-    title: `Tarea ${sequence}`,
-    description: 'Una tarea de prueba.',
+    title: `Task ${sequence}`,
+    description: 'A test task.',
     requester: 'tester@ops.example',
     status: 'pending',
     created_at: '2026-01-15T10:00:00Z',

@@ -23,7 +23,7 @@ export function SchemaFields({ schema, values, onChange, errors, idPrefix }: Sch
   const properties = Object.entries(schema.properties ?? {});
   const required = new Set(schema.required ?? []);
 
-  if (properties.length === 0) return <p className="field__hint">Este tipo no pide datos extra.</p>;
+  if (properties.length === 0) return <p className="field__hint">This type needs no extra data.</p>;
 
   return (
     <>

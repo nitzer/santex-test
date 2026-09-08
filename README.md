@@ -1,72 +1,80 @@
 # Ops Tool — Pending Actions
 
-Herramienta interna de operaciones: lista de tareas pendientes (aprobar un gasto, revisar un deployment, subir documentación, completar un onboarding) que se pueden crear, ver y completar.
+An internal operations tool: a queue of pending actions (approve an expense, review a deployment, upload documentation, complete an onboarding) that users can create, inspect and complete.
 
-Es un proyecto de aprendizaje: el foco está en la arquitectura y los patrones, no en el producto. Contrato de dominio y decisiones en [`specs/domain.md`](specs/domain.md).
+In the UI they are called **tasks**; in the API and the code they are **actions** (the assignment's word). Same thing.
 
-## Stack
+Built with Claude Code as a pair programmer; the architecture, the scope decisions and the reviews are mine.
 
-| | |
-|---|---|
-| `apps/api` | Python 3.12 · FastAPI · SQLModel (SQLite) · `uv` |
-| `apps/web` | React 19 · Vite · TypeScript · Vitest · Playwright |
-| raíz | pnpm workspaces · `openapi-typescript` (tipos del front generados desde el OpenAPI del back) · Docker Compose |
+## How to run
 
-## Levantar con Docker (lo más rápido)
+**Docker (fastest):**
 
 ```bash
 docker compose up --build
-# web: http://localhost:5173   api: http://localhost:8000/docs
+# web: http://localhost:5173   api docs: http://localhost:8000/docs
 ```
 
-Si un puerto está ocupado, copiá `.env.example` a `.env` y cambiá `API_PORT` / `WEB_PORT`. La DB y los archivos subidos persisten en el volumen `api-data`.
+If a port is taken, copy `.env.example` to `.env` and change `API_PORT` / `WEB_PORT`. The database and the uploaded files live in the `api-data` volume.
 
-## Desarrollo local
-
-Requisitos: Node 22, pnpm 11 y [`uv`](https://docs.astral.sh/uv/) (`pip install uv`). No hace falta tener Python 3.12 instalado: `uv sync` lo descarga si el sistema no lo tiene.
+**Local development.** Requires Node 22, pnpm 11 and [`uv`](https://docs.astral.sh/uv/) (`pip install uv`; it downloads Python 3.12 if the system lacks it).
 
 ```bash
-pnpm install                 # deps JS (raíz + apps/web)
-(cd apps/api && uv sync)     # deps Python en apps/api/.venv
+pnpm install                 # JS deps (root + apps/web)
+(cd apps/api && uv sync)     # Python deps into apps/api/.venv
 
-pnpm dev:api                 # FastAPI en :8000 con reload
-pnpm dev:web                 # Vite en :5173
-pnpm gen:types               # regenera apps/web/src/types/api.d.ts desde apps/api/openapi.json
+pnpm dev:api                 # FastAPI on :8000, reload on
+pnpm dev:web                 # Vite on :5173
+pnpm gen:types               # regenerate apps/web/src/types/api.d.ts from apps/api/openapi.json
 ```
 
-Si la API corre en otro puerto: `VITE_API_URL=http://localhost:8001 pnpm dev:web` y `CORS_ORIGINS=http://localhost:5173` en la API. Variables de la API: `DATABASE_URL`, `UPLOADS_DIR`, `CORS_ORIGINS` (ver `apps/api/src/api/config.py`).
+If the API runs elsewhere: `VITE_API_URL=http://localhost:8001 pnpm dev:web`, and `CORS_ORIGINS=http://localhost:5173` on the API. API settings are env vars (`DATABASE_URL`, `UPLOADS_DIR`, `CORS_ORIGINS`, `LOG_LEVEL`, `LOG_FORMAT`) — see `apps/api/src/api/config.py`.
 
-## Tests
+**Tests:**
 
 ```bash
-pnpm test:api     # pytest: tests/unit (sin HTTP ni DB de archivo) + tests/integration (TestClient)
-pnpm test:web     # vitest: componentes, formularios, cliente HTTP, registry
-pnpm test:e2e     # playwright: levanta api + web y recorre el flujo completo en Chromium
+pnpm test:api     # pytest: tests/unit (no HTTP, no file DB) + tests/integration (TestClient)
+pnpm test:web     # vitest: components, forms, HTTP client, registries
+pnpm test:e2e     # playwright: boots api + web, walks the whole flow in Chromium
 ```
 
-Los e2e aceptan `E2E_API_PORT` y `E2E_WEB_PORT` para no chocar con servers ya levantados. La primera vez, Playwright necesita Chromium y sus librerías de sistema: `pnpm --filter web exec playwright install chromium` y, en Linux, `sudo pnpm --filter web exec playwright install-deps chromium`.
+The e2e accept `E2E_API_PORT` / `E2E_WEB_PORT` so they never collide with servers you already have up. First run: `pnpm --filter web exec playwright install chromium`, and on Linux `sudo pnpm --filter web exec playwright install-deps chromium`.
 
-## Arquitectura
+## How it is built
 
-**Backend** — capas `router → service → repository`, cableadas con `Depends()`:
+The domain contract, the ER diagram and the decisions below live in [`specs/domain.md`](specs/domain.md); each app has its own README with the details.
 
-- **Strategy**: cada tipo de tarea es un handler en `apps/api/src/api/handlers/` que sabe validar y completar tareas de su tipo. Dueño de sus dos contratos Pydantic: `creation_model` (forma del `payload` al crear) y `payload_model` (body de `/complete`).
-- **Registry + auto-discovery**: `@register(ActionType.X)` inscribe cada handler; `handlers/__init__.py` importa todos los módulos del paquete, así no existe ninguna lista manual ni `if type == ...`. `GET /action-types` y los `oneOf` del OpenAPI se derivan del registry.
-- **ISP**: `JsonCompletionHandler` y `FileCompletionHandler` son interfaces separadas; los endpoints rechazan (400) el tipo equivocado.
-- **Repository**: `ActionRepository` e `IdempotencyRepository` son el único lugar que toca la sesión de DB.
-- **Idempotencia**: los tres endpoints mutantes exigen `Idempotency-Key`. Misma key → misma respuesta sin repetir el efecto; key nueva sobre una tarea ya completada → 409. Implementado una sola vez como dependency reutilizable (`idempotency_guard`).
-- **Observabilidad**: cada request recibe un `X-Request-ID` (se respeta el del cliente si lo manda) que vuelve en la respuesta y se estampa en todos los logs de esa request — access log propio con método, path, status y duración, y eventos de dominio (`created`, `completed`) con `action_id`/`action_type`. `LOG_FORMAT=json` para ingestión por máquina, `LOG_LEVEL` para el nivel. `GET /health` para liveness.
+**Backend** (`apps/api`, FastAPI + SQLModel on SQLite): `router → service → repository`, wired with `Depends()`. Each action type is a *handler* — a Strategy that owns its two Pydantic contracts (the payload accepted at creation and the body accepted at completion) and knows how to complete an action of its type. Handlers register themselves with `@register(ActionType.X)`; the package auto-discovers its modules, so there is no import list and no `if type == ...` anywhere. `GET /action-types` and the OpenAPI `oneOf`s are derived from that registry. Adding a type is an enum member plus one file; a test fails if a type is left without a handler.
 
-**Frontend** — espejo del mismo diseño:
+**Frontend** (`apps/web`, React + Vite + TypeScript): types are generated from the API's OpenAPI, never retyped — `BaseTask` plus `Task<'expense_approval'>`… form a union discriminated by `type`. Completion has one small form per type, resolved through a registry (no `switch`). Creation is generated from the JSON Schema the API publishes per type, so a new type shows up in the "Add task" form with its fields, labels and hints without frontend code.
 
-- Tipos con herencia base → tipo: `BaseTask` + `Task<'expense_approval'>`… generados desde el OpenAPI.
-- `formRegistry`: un componente de completado por tipo, resuelto por registro (sin `switch`).
-- Formulario de alta **generado desde el JSON Schema** que expone `GET /action-types`: un tipo nuevo en el backend aparece en el selector con sus campos sin tocar el front.
+**API design.** Resources, not verbs: `GET /action-types`, `GET|POST /actions`, `GET /actions/{id}`, `POST /actions/{id}/complete` (JSON) and `POST /actions/{id}/upload` (multipart). Status codes carry meaning — 201 on create, 400 wrong endpoint for the type, 404, 409 already completed, 422 validation with FastAPI's per-field detail. The three mutating endpoints require an `Idempotency-Key`: replaying a key returns the stored response without repeating the effect, so a network retry or a double click cannot complete or create twice.
 
-### Agregar un tipo de tarea
+**Validation and errors.** Validation is Pydantic, per type, where the data is defined: amount > 0, ISO currency code, non-empty checklist, completed steps must belong to the checklist, uploaded filenames are sanitised. The HTTP mapping of domain errors lives in one place in the service. The frontend maps a 422 back onto the field that caused it, shows 400/409 as a message, and keeps the submit button disabled while a request is in flight.
 
-1. Sumar el miembro a `ActionType` en `apps/api/src/api/models.py`.
-2. Crear `apps/api/src/api/handlers/<nuevo>.py`: sus modelos `*Create` (y `*Complete` si se completa con JSON) y la clase handler con `@register(ActionType.NUEVO)`, `label`, `creation_model`.
-3. `pnpm gen:types`, y en el front: un componente de completado + su entrada en `formRegistry` y en `TaskPayloadByType`.
+**Observability.** Every request gets an `X-Request-ID` (yours if you send one), echoed in the response and stamped on every log line produced while handling it: an access log with method, path, status and duration, and domain events (`created`, `completed`) with the action id and type. `LOG_FORMAT=json` for machine ingestion; `GET /health` for liveness and the Docker healthcheck.
 
-Los tests de registry (back y front) fallan si un tipo queda sin handler o sin formulario — esa es la red de seguridad del diseño extensible.
+**Accessibility.** Every input has a label; errors are announced with `role="alert"` and linked with `aria-describedby`; regions and lists have names; the e2e tests find everything by role and label, which keeps the markup honest. I did not run an automated audit — see below.
+
+**Libraries.** FastAPI, SQLModel and `uv` on the back; React, Vite, Vitest, Playwright and `openapi-typescript` on the front. No Redux, no router, no UI kit, no form library: one screen and four small forms did not justify them. The JSON-Schema renderer is hand-rolled and covers the subset the payloads use.
+
+## Assumptions
+
+- **Completing is terminal.** A pending action is a decision waiting to be made; once made, it is no longer pending. Approving and rejecting both end in `completed`, and the verdict lives in `result`. A "rejected" status would be the first thing to add if the workflow needed to distinguish them.
+- **Single implicit actor, no auth.** Anyone who opens the tool can see and complete everything; `requester` is free text.
+- **Seed data on first start.** With an empty database the API inserts one example action per type, so the app is usable the moment it comes up. The seed goes through the same validation as `POST /actions`.
+- **Uploads go to local disk** (`UPLOADS_DIR`), not to object storage.
+- **One operator at a time.** Idempotency protects against retries and double clicks, not against two concurrent requests racing on the same key — that would need a lock.
+
+## Tradeoffs
+
+- **One table with a JSON `payload`, not a table per type.** Adding a type does not touch the schema, and the polymorphism lives in code where Strategy handles it well. The cost: no per-column integrity, validation happens only in Pydantic, and querying by a payload field is awkward. For a queue that is read by id and by status, I took that deal.
+- **Creation form generated from JSON Schema, not one form per type.** Zero frontend code per new type, and the backend stays the single source of truth for field names, titles and hints. The cost: a generic look, a renderer that understands a subset of JSON Schema, and a payload the compiler cannot type inside the form (the API re-validates it). Completion kept per-type forms because those *do* want bespoke widgets.
+- **`/complete` and `/upload` as separate endpoints, not one polymorphic one.** Each keeps its natural content type and is documented precisely in OpenAPI; the client has to know which one to call, which the registry tells it. One endpoint accepting both JSON and multipart would have been smaller and vaguer.
+- SQLite, no migrations tool, no pagination: right-sized for the exercise, all of them one-liners to revisit.
+
+## If I had another day
+
+1. **UX polish and an accessibility audit.** A visual pass (hierarchy, empty and loading states, feedback after completing) and axe/Lighthouse runs, so the accessibility claims above rest on evidence rather than on roles and labels.
+2. **Metrics and tracing.** A `/metrics` endpoint (latency per endpoint, counts per status) and OpenTelemetry traces tied to the request id, on top of the structured logs.
+3. **Auth, roles and an audit trail.** Who may complete what, and recording who completed each action — today `requester` is a string and completion has no actor.

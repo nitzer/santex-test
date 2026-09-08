@@ -26,11 +26,11 @@ export function DocumentUploadForm({ action, onCompleted }: CompletionFormProps<
       onSubmit={handleSubmit}
       submitting={submitting}
       error={error}
-      submitLabel="Subir documento"
+      submitLabel="Upload document"
       disabled={file === null}
     >
       <label className="field">
-        Documento
+        File
         <input
           type="file"
           onChange={(event) => setFile(event.target.files?.[0] ?? null)}

@@ -7,7 +7,7 @@ import { makeTask } from '../../test/factories';
 import { lastJsonBody, lastRequest, mockFetchOnceJson } from '../../test/fetchMock';
 import { OnboardingForm } from './OnboardingForm';
 
-const CHECKLIST = ['Crear cuenta de correo', 'Asignar notebook', 'Alta en el repositorio'];
+const CHECKLIST = ['Create email account', 'Assign laptop', 'Grant repository access', 'Welcome session with the team'];
 
 const action = makeTask('onboarding', {
   payload: { employee_name: 'Sofia Cabrera', checklist: CHECKLIST },
@@ -27,7 +27,7 @@ describe('OnboardingForm', () => {
     const user = userEvent.setup();
     render(<OnboardingForm action={action} onCompleted={vi.fn()} />);
 
-    const submit = screen.getByRole('button', { name: /registrar pasos/i });
+    const submit = screen.getByRole('button', { name: /complete onboarding/i });
     expect(submit).toBeDisabled();
 
     await user.click(screen.getByRole('checkbox', { name: CHECKLIST[0] as string }));
@@ -44,7 +44,7 @@ describe('OnboardingForm', () => {
     // Ticked out of order on purpose: the payload must follow the checklist, not clicks.
     await user.click(screen.getByRole('checkbox', { name: CHECKLIST[2] as string }));
     await user.click(screen.getByRole('checkbox', { name: CHECKLIST[0] as string }));
-    await user.click(screen.getByRole('button', { name: /registrar pasos/i }));
+    await user.click(screen.getByRole('button', { name: /complete onboarding/i }));
 
     const request = lastRequest(fetchSpy);
     expect(request.url).toContain(`/actions/${action.id}/complete`);

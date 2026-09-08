@@ -10,8 +10,8 @@ from api.services.action_service import ActionService
 SEED_ACTIONS: list[dict[str, Any]] = [
     {
         "type": ActionType.EXPENSE_APPROVAL,
-        "title": "Aprobar gasto de viaje a cliente",
-        "description": "Vuelo y hotel para la visita on-site a Acme Corp.",
+        "title": "Approve client trip expense",
+        "description": "Flight and hotel for the on-site visit to Acme Corp.",
         "requester": "lucia.mendez@ops.example",
         "payload": {
             "amount": 1240.50,
@@ -21,8 +21,8 @@ SEED_ACTIONS: list[dict[str, Any]] = [
     },
     {
         "type": ActionType.DEPLOYMENT_REVIEW,
-        "title": "Revisar deploy de checkout-api a produccion",
-        "description": "Release con el nuevo flujo de reintentos de pago.",
+        "title": "Review checkout-api deployment to production",
+        "description": "Release with the new payment retry flow.",
         "requester": "ci-bot@ops.example",
         "payload": {
             "service": "checkout-api",
@@ -32,23 +32,23 @@ SEED_ACTIONS: list[dict[str, Any]] = [
     },
     {
         "type": ActionType.DOCUMENTATION_UPLOAD,
-        "title": "Subir el runbook de incidentes",
-        "description": "Falta el runbook actualizado del on-call de plataforma.",
+        "title": "Upload the incident runbook",
+        "description": "The updated platform on-call runbook is missing.",
         "requester": "martin.rios@ops.example",
-        "payload": {"document_name": "runbook-oncall-plataforma.md"},
+        "payload": {"document_name": "platform-oncall-runbook.md"},
     },
     {
         "type": ActionType.ONBOARDING,
-        "title": "Onboarding de Sofia Cabrera",
-        "description": "Primer dia el lunes; completar el checklist de accesos.",
+        "title": "Onboard Sofia Cabrera",
+        "description": "Starts Monday; complete the access checklist.",
         "requester": "people@ops.example",
         "payload": {
             "employee_name": "Sofia Cabrera",
             "checklist": [
-                "Crear cuenta de correo",
-                "Asignar notebook",
-                "Alta en el repositorio",
-                "Sesion de bienvenida con el equipo",
+                "Create email account",
+                "Assign laptop",
+                "Grant repository access",
+                "Welcome session with the team",
             ],
         },
     },

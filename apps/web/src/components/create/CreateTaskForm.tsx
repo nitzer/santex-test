@@ -95,11 +95,11 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
   if (loadError !== null) {
     return (
       <p className="form__error" role="alert">
-        No se pudieron cargar los tipos de tarea: {loadError}
+        Couldn't load task types: {loadError}
       </p>
     );
   }
-  if (descriptors === null) return <p className="app__status">Cargando tipos…</p>;
+  if (descriptors === null) return <p className="app__status">Loading types…</p>;
 
   return (
     <form
@@ -111,7 +111,7 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
       }}
     >
       <div className="field">
-        <label htmlFor="create-type">Tipo</label>
+        <label htmlFor="create-type">Type</label>
         <select
           id="create-type"
           value={selectedType}
@@ -127,14 +127,14 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
 
       <BaseField
         name="title"
-        label="Título"
+        label="Title"
         value={base.title}
         error={errors.base.title}
         onChange={(title) => setBase((current) => ({ ...current, title }))}
       />
       <BaseField
         name="description"
-        label="Descripción"
+        label="Description"
         value={base.description}
         error={errors.base.description}
         multiline
@@ -142,7 +142,7 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
       />
       <BaseField
         name="requester"
-        label="Solicitante"
+        label="Requester"
         value={base.requester}
         error={errors.base.requester}
         onChange={(requester) => setBase((current) => ({ ...current, requester }))}
@@ -150,7 +150,7 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
 
       {selected !== null && (
         <fieldset className="field">
-          <legend>Datos de {selected.label}</legend>
+          <legend>{selected.label} details</legend>
           <SchemaFields
             // Remounting per type clears any draft state the previous type's fields held.
             key={selected.type}
@@ -173,10 +173,10 @@ export function CreateTaskForm({ onCreated, onCancel }: CreateTaskFormProps) {
 
       <div className="form__actions">
         <button className="button" type="submit" disabled={submitting}>
-          {submitting ? 'Creando…' : 'Crear tarea'}
+          {submitting ? 'Creating…' : 'Create task'}
         </button>
         <button className="button button--ghost" type="button" onClick={onCancel}>
-          Cancelar
+          Cancel
         </button>
       </div>
     </form>

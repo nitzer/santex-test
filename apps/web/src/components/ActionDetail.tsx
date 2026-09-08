@@ -27,12 +27,12 @@ export function ActionDetail({ action, onCompleted }: ActionDetailProps) {
         <h2>{action.title}</h2>
         <p className="detail__description">{action.description}</p>
         <p className="detail__meta">
-          Pedido por <strong>{action.requester}</strong> · {formatDate(action.created_at)}
+          Requested by <strong>{action.requester}</strong> · {formatDate(action.created_at)}
         </p>
       </header>
 
-      <section className="detail__section" aria-label="Datos">
-        <h3>Datos</h3>
+      <section className="detail__section" aria-label="Details">
+        <h3>Details</h3>
         <JsonFacts facts={action.payload} />
       </section>
 
@@ -43,11 +43,11 @@ export function ActionDetail({ action, onCompleted }: ActionDetailProps) {
           <CompletionForm action={action} onCompleted={onCompleted} />
         </section>
       ) : (
-        <section className="detail__section" aria-label="Resultado">
-          <h3>Resultado</h3>
+        <section className="detail__section" aria-label="Result">
+          <h3>Result</h3>
           <JsonFacts facts={action.result ?? {}} />
           {action.completed_at !== null && (
-            <p className="detail__meta">Completada el {formatDate(action.completed_at)}</p>
+            <p className="detail__meta">Completed on {formatDate(action.completed_at)}</p>
           )}
         </section>
       )}

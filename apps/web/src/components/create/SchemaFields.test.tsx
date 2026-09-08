@@ -14,7 +14,7 @@ const SCHEMA: JsonSchema = {
   type: 'object',
   properties: {
     amount: { type: 'number', exclusiveMinimum: 0, title: 'Amount' },
-    currency: { type: 'string', title: 'Currency', description: 'Código ISO de 3 letras' },
+    currency: { type: 'string', title: 'Currency', description: '3-letter ISO code' },
     receipt_url: { type: 'string', format: 'uri', title: 'Receipt Url' },
     environment: { type: 'string', enum: ['staging', 'production'], title: 'Environment' },
     checklist: { type: 'array', items: { type: 'string' }, minItems: 1, title: 'Checklist' },
@@ -60,7 +60,7 @@ describe('SchemaFields', () => {
     expect(screen.getByLabelText(/^Receipt Url/)).toHaveAttribute('type', 'url');
     expect(screen.getByLabelText(/^Urgent/)).toHaveAttribute('type', 'checkbox');
     expect(screen.getByRole('combobox', { name: /Environment/ })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /Checklist: nuevo ítem/ })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Checklist: new item/ })).toBeInTheDocument();
   });
 
   it('offers every enum option', () => {
@@ -80,7 +80,7 @@ describe('SchemaFields', () => {
 
   it('shows the schema description as a hint', () => {
     render(<Harness />);
-    expect(screen.getByText('Código ISO de 3 letras')).toBeInTheDocument();
+    expect(screen.getByText('3-letter ISO code')).toBeInTheDocument();
   });
 
   it('emits a number for numeric fields, not a string', async () => {
@@ -111,13 +111,13 @@ describe('SchemaFields', () => {
     const user = userEvent.setup();
     render(<Harness onValues={(values) => seen.push(values)} />);
 
-    const draft = screen.getByRole('textbox', { name: /Checklist: nuevo ítem/ });
-    await user.type(draft, 'Crear cuenta{Enter}');
-    await user.type(draft, 'Asignar notebook{Enter}');
-    expect(seen.at(-1)?.checklist).toEqual(['Crear cuenta', 'Asignar notebook']);
+    const draft = screen.getByRole('textbox', { name: /Checklist: new item/ });
+    await user.type(draft, 'Create account{Enter}');
+    await user.type(draft, 'Assign laptop{Enter}');
+    expect(seen.at(-1)?.checklist).toEqual(['Create account', 'Assign laptop']);
 
-    await user.click(screen.getByRole('button', { name: 'Quitar Crear cuenta' }));
-    expect(seen.at(-1)?.checklist).toEqual(['Asignar notebook']);
+    await user.click(screen.getByRole('button', { name: 'Remove Create account' }));
+    expect(seen.at(-1)?.checklist).toEqual(['Assign laptop']);
   });
 
   it('emits a boolean for checkbox fields', async () => {
@@ -149,7 +149,7 @@ describe('SchemaFields', () => {
 
   it('says so when a type asks for no extra data', () => {
     render(<Harness schema={{ type: 'object', properties: {} }} />);
-    expect(screen.getByText(/no pide datos extra/i)).toBeInTheDocument();
+    expect(screen.getByText(/needs no extra data/i)).toBeInTheDocument();
   });
 
   it('falls back to a text input for a property it does not recognise', () => {

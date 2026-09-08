@@ -22,7 +22,7 @@ export function ExpenseApprovalForm({ action, onCompleted }: CompletionFormProps
       onSubmit={handleSubmit}
       submitting={submitting}
       error={error}
-      submitLabel="Resolver gasto"
+      submitLabel="Resolve expense"
     >
       <label className="field field--inline">
         <input
@@ -30,16 +30,16 @@ export function ExpenseApprovalForm({ action, onCompleted }: CompletionFormProps
           checked={approved}
           onChange={(event) => setApproved(event.target.checked)}
         />
-        Aprobar el gasto
+        Approve the expense
       </label>
 
       <label className="field">
-        Comentario
+        Comment
         <textarea
           value={comment}
           onChange={(event) => setComment(event.target.value)}
           rows={3}
-          placeholder="Por qué se aprueba o se rechaza"
+          placeholder="Why it is approved or rejected"
         />
       </label>
     </FormShell>

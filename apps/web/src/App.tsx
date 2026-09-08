@@ -16,9 +16,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Tareas pendientes</h1>
+        <h1>Pending tasks</h1>
         <button className="button" type="button" onClick={() => setCreating(true)}>
-          Agregar tarea
+          Add task
         </button>
       </header>
 
@@ -26,13 +26,13 @@ export default function App() {
         <p className="app__error" role="alert">
           {error}{' '}
           <button className="button button--ghost button--small" type="button" onClick={reload}>
-            Reintentar
+            Retry
           </button>
         </p>
       )}
 
       {loading ? (
-        <p className="app__status">Cargando tareas…</p>
+        <p className="app__status">Loading tasks…</p>
       ) : (
         <main className="app__body">
           <ActionsList
@@ -42,8 +42,8 @@ export default function App() {
           />
           <div className="app__detail">
             {creating ? (
-              <section className="detail" aria-label="Agregar tarea">
-                <h2>Agregar tarea</h2>
+              <section className="detail" aria-label="Add task">
+                <h2>Add task</h2>
                 <CreateTaskForm
                   onCreated={(task) => {
                     // The 201 carries the stored task, so the list is up to date without
@@ -56,7 +56,7 @@ export default function App() {
                 />
               </section>
             ) : selected === null ? (
-              <p className="app__status">Elegí una tarea de la lista.</p>
+              <p className="app__status">Pick a task from the list.</p>
             ) : (
               <ActionDetail
                 // Remounting per task gives each completion form a fresh idempotency key

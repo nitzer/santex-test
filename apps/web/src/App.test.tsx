@@ -6,8 +6,8 @@ import App from './App';
 import { makeTask } from './test/factories';
 import { jsonResponse, mockFetch } from './test/fetchMock';
 
-const seeded = makeTask('expense_approval', { title: 'Aprobar gasto de viaje' });
-const createdTask = makeTask('onboarding', { title: 'Onboarding de Sofia' });
+const seeded = makeTask('expense_approval', { title: 'Approve travel expense' });
+const createdTask = makeTask('onboarding', { title: 'Sofia onboarding' });
 
 const DESCRIPTORS = [
   {
@@ -36,10 +36,10 @@ describe('App', () => {
     mockApi();
     render(<App />);
 
-    await screen.findByRole('button', { name: 'Agregar tarea' });
+    await screen.findByRole('button', { name: 'Add task' });
     // The list stays current by folding in what the mutating endpoints answer, so there
     // is nothing for a refresh button to do.
-    expect(screen.queryByRole('button', { name: /refrescar/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /refresh/i })).not.toBeInTheDocument();
   });
 
   it('opens the creation form and adds the created task to the pending list', async () => {
@@ -47,22 +47,22 @@ describe('App', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(await screen.findByRole('button', { name: 'Agregar tarea' }));
-    await screen.findByRole('combobox', { name: 'Tipo' });
+    await user.click(await screen.findByRole('button', { name: 'Add task' }));
+    await screen.findByRole('combobox', { name: 'Type' });
 
-    await user.type(screen.getByLabelText(/^Título/), 'Onboarding de Sofia');
-    await user.type(screen.getByLabelText(/^Descripción/), 'Primer día el lunes');
-    await user.type(screen.getByLabelText(/^Solicitante/), 'people@ops.example');
+    await user.type(screen.getByLabelText(/^Title/), 'Sofia onboarding');
+    await user.type(screen.getByLabelText(/^Description/), 'First day on Monday');
+    await user.type(screen.getByLabelText(/^Requester/), 'people@ops.example');
     await user.type(screen.getByLabelText(/^Employee Name/), 'Sofia Cabrera');
-    await user.click(screen.getByRole('button', { name: 'Crear tarea' }));
+    await user.click(screen.getByRole('button', { name: 'Create task' }));
 
     // The panel closes, the new task is in the list, and it is what is on screen.
     await waitFor(() =>
-      expect(screen.queryByRole('combobox', { name: 'Tipo' })).not.toBeInTheDocument(),
+      expect(screen.queryByRole('combobox', { name: 'Type' })).not.toBeInTheDocument(),
     );
-    const pending = screen.getByRole('region', { name: 'Pendientes' });
-    expect(within(pending).getByRole('button', { name: /onboarding de sofia/i })).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Onboarding de Sofia' })).toBeInTheDocument();
+    const pending = screen.getByRole('region', { name: 'Pending' });
+    expect(within(pending).getByRole('button', { name: /sofia onboarding/i })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Sofia onboarding' })).toBeInTheDocument();
   });
 
   it('lets a failed load be retried', async () => {
@@ -76,8 +76,8 @@ describe('App', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await user.click(await screen.findByRole('button', { name: 'Reintentar' }));
+    await user.click(await screen.findByRole('button', { name: 'Retry' }));
 
-    expect(await screen.findByRole('button', { name: /aprobar gasto de viaje/i })).toBeVisible();
+    expect(await screen.findByRole('button', { name: /approve travel expense/i })).toBeVisible();
   });
 });

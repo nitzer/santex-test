@@ -22,7 +22,7 @@ export function DeploymentReviewForm({ action, onCompleted }: CompletionFormProp
       onSubmit={handleSubmit}
       submitting={submitting}
       error={error}
-      submitLabel="Resolver review"
+      submitLabel="Resolve review"
     >
       <label className="field field--inline">
         <input
@@ -30,16 +30,16 @@ export function DeploymentReviewForm({ action, onCompleted }: CompletionFormProp
           checked={approved}
           onChange={(event) => setApproved(event.target.checked)}
         />
-        Aprobar el deploy
+        Approve the deployment
       </label>
 
       <label className="field">
-        Notas
+        Notes
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           rows={3}
-          placeholder="Qué se revisó, riesgos, plan de rollback"
+          placeholder="What was reviewed, risks, rollback plan"
         />
       </label>
     </FormShell>

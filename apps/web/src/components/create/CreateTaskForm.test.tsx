@@ -11,7 +11,7 @@ import { CreateTaskForm } from './CreateTaskForm';
 const DESCRIPTORS = [
   {
     type: 'expense_approval',
-    label: 'Aprobación de gasto',
+    label: 'Approve expense',
     completion: 'json',
     schema_name: 'ExpenseApprovalCreate',
     payload_schema: {
@@ -55,55 +55,55 @@ async function renderForm(onCreate: () => Response = () => jsonResponse(created,
   const onCancel = vi.fn();
   render(<CreateTaskForm onCreated={onCreated} onCancel={onCancel} />);
   // The type selector only exists once /action-types has answered.
-  await screen.findByRole('combobox', { name: 'Tipo' });
+  await screen.findByRole('combobox', { name: 'Type' });
   return { spy, onCreated, onCancel, user: userEvent.setup() };
 }
 
-const created = makeTask('expense_approval', { title: 'Nuevo gasto' });
+const created = makeTask('expense_approval', { title: 'Approve travel expense' });
 
 describe('CreateTaskForm', () => {
   it('offers every type the API reports, by label', async () => {
     await renderForm();
 
-    const options = within(screen.getByRole('combobox', { name: 'Tipo' }))
+    const options = within(screen.getByRole('combobox', { name: 'Type' }))
       .getAllByRole('option')
       .map((option) => option.textContent);
-    expect(options).toEqual(['Aprobación de gasto', 'Onboarding']);
+    expect(options).toEqual(['Approve expense', 'Onboarding']);
   });
 
   it('always shows the base fields', async () => {
     await renderForm();
 
-    expect(screen.getByLabelText(/^Título/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Descripción/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Solicitante/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Title/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Description/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Requester/)).toBeInTheDocument();
   });
 
   it('swaps the extra fields when the type changes, keeping the base fields', async () => {
     const { user } = await renderForm();
 
     expect(screen.getByLabelText(/^Amount/)).toBeInTheDocument();
-    await user.type(screen.getByLabelText(/^Título/), 'Sigue acá');
+    await user.type(screen.getByLabelText(/^Title/), 'Still here');
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Tipo' }), 'onboarding');
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Type' }), 'onboarding');
 
     expect(screen.queryByLabelText(/^Amount/)).not.toBeInTheDocument();
     expect(screen.getByLabelText(/^Employee Name/)).toBeInTheDocument();
-    expect(screen.getByText('Datos de Onboarding')).toBeInTheDocument();
+    expect(screen.getByText('Onboarding details')).toBeInTheDocument();
     // The base fields describe the task, not its type, so they survive the switch.
-    expect(screen.getByLabelText(/^Título/)).toHaveValue('Sigue acá');
+    expect(screen.getByLabelText(/^Title/)).toHaveValue('Still here');
   });
 
   it('posts the base fields and the schema payload with an Idempotency-Key', async () => {
     const { spy, onCreated, user } = await renderForm();
 
-    await user.type(screen.getByLabelText(/^Título/), 'Aprobar gasto de viaje');
-    await user.type(screen.getByLabelText(/^Descripción/), 'Vuelo y hotel');
-    await user.type(screen.getByLabelText(/^Solicitante/), 'lucia@ops.example');
+    await user.type(screen.getByLabelText(/^Title/), 'Approve travel expense');
+    await user.type(screen.getByLabelText(/^Description/), 'Flight and hotel');
+    await user.type(screen.getByLabelText(/^Requester/), 'lucia@ops.example');
     await user.type(screen.getByLabelText(/^Amount/), '1240.5');
     await user.type(screen.getByLabelText(/^Currency/), 'USD');
     await user.type(screen.getByLabelText(/^Receipt Url/), 'https://receipts.example/x.pdf');
-    await user.click(screen.getByRole('button', { name: 'Crear tarea' }));
+    await user.click(screen.getByRole('button', { name: 'Create task' }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created));
 
@@ -113,8 +113,8 @@ describe('CreateTaskForm', () => {
     expect(request.headers.get(IDEMPOTENCY_HEADER)).toBeTruthy();
     expect(lastJsonBody(spy)).toEqual({
       type: 'expense_approval',
-      title: 'Aprobar gasto de viaje',
-      description: 'Vuelo y hotel',
+      title: 'Approve travel expense',
+      description: 'Flight and hotel',
       requester: 'lucia@ops.example',
       payload: {
         amount: 1240.5,
@@ -127,23 +127,23 @@ describe('CreateTaskForm', () => {
   it('sends the array payload the selected type declares', async () => {
     const { spy, user } = await renderForm();
 
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Tipo' }), 'onboarding');
-    await user.type(screen.getByLabelText(/^Título/), 'Onboarding de Sofia');
-    await user.type(screen.getByLabelText(/^Descripción/), 'Primer día el lunes');
-    await user.type(screen.getByLabelText(/^Solicitante/), 'people@ops.example');
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Type' }), 'onboarding');
+    await user.type(screen.getByLabelText(/^Title/), 'Sofia onboarding');
+    await user.type(screen.getByLabelText(/^Description/), 'First day on Monday');
+    await user.type(screen.getByLabelText(/^Requester/), 'people@ops.example');
     await user.type(screen.getByLabelText(/^Employee Name/), 'Sofia Cabrera');
 
-    const draft = screen.getByRole('textbox', { name: /Checklist: nuevo ítem/ });
-    await user.type(draft, 'Crear cuenta de correo{Enter}');
-    await user.type(draft, 'Asignar notebook{Enter}');
-    await user.click(screen.getByRole('button', { name: 'Crear tarea' }));
+    const draft = screen.getByRole('textbox', { name: /Checklist: new item/ });
+    await user.type(draft, 'Create email account{Enter}');
+    await user.type(draft, 'Assign laptop{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Create task' }));
 
     await waitFor(() => expect(lastRequest(spy).method).toBe('POST'));
     expect(lastJsonBody(spy)).toMatchObject({
       type: 'onboarding',
       payload: {
         employee_name: 'Sofia Cabrera',
-        checklist: ['Crear cuenta de correo', 'Asignar notebook'],
+        checklist: ['Create email account', 'Assign laptop'],
       },
     });
   });
@@ -165,12 +165,12 @@ describe('CreateTaskForm', () => {
       ),
     );
 
-    await user.click(screen.getByRole('button', { name: 'Crear tarea' }));
+    await user.click(screen.getByRole('button', { name: 'Create task' }));
 
     const titleError = await screen.findByText('Field required');
     expect(titleError).toBeInTheDocument();
     expect(screen.getByText('Input should be greater than 0')).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Título/)).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByLabelText(/^Title/)).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByLabelText(/^Amount/)).toHaveAttribute('aria-invalid', 'true');
     expect(onCreated).not.toHaveBeenCalled();
   });
@@ -180,7 +180,7 @@ describe('CreateTaskForm', () => {
       jsonResponse({ detail: 'Idempotency-Key header is required' }, 400),
     );
 
-    await user.click(screen.getByRole('button', { name: 'Crear tarea' }));
+    await user.click(screen.getByRole('button', { name: 'Create task' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Idempotency-Key header is required',
@@ -191,12 +191,12 @@ describe('CreateTaskForm', () => {
     mockFetch(() => Promise.resolve(jsonResponse({ detail: 'boom' }, 500)));
     render(<CreateTaskForm onCreated={vi.fn()} onCancel={vi.fn()} />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/no se pudieron cargar los tipos/i);
+    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't load task types/i);
   });
 
   it('hands cancelling back to its caller', async () => {
     const { onCancel, user } = await renderForm();
-    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onCancel).toHaveBeenCalled();
   });
 });

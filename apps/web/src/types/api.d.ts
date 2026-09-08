@@ -198,35 +198,35 @@ export interface components {
         };
         /** DeploymentReviewCreate */
         DeploymentReviewCreate: {
-            /** Servicio */
+            /** Service */
             service: string;
-            /** Versión */
+            /** Version */
             version: string;
             /**
-             * Entorno
-             * @description Ej. staging, production.
+             * Environment
+             * @description E.g. staging, production.
              */
             environment: string;
         };
         /** DocumentationUploadCreate */
         DocumentationUploadCreate: {
-            /** Nombre del documento */
+            /** Document name */
             document_name: string;
         };
         /** ExpenseApprovalCreate */
         ExpenseApprovalCreate: {
             /**
-             * Monto
-             * @description Importe del gasto, mayor a cero.
+             * Amount
+             * @description Expense total, greater than zero.
              */
             amount: number;
             /**
-             * Moneda
-             * @description Código ISO de 3 letras, ej. ARS.
+             * Currency
+             * @description 3-letter ISO code, e.g. USD.
              */
             currency: string;
             /**
-             * Comprobante (URL)
+             * Receipt (URL)
              * Format: uri
              */
             receipt_url: string;
@@ -238,11 +238,11 @@ export interface components {
         };
         /** OnboardingCreate */
         OnboardingCreate: {
-            /** Nombre del empleado */
+            /** Employee name */
             employee_name: string;
             /**
              * Checklist
-             * @description Pasos a completar durante el onboarding.
+             * @description Steps to complete during onboarding.
              */
             checklist: string[];
         };

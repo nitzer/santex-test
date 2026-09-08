@@ -7,9 +7,9 @@ from api.models import Action, ActionType
 
 
 class OnboardingCreate(BaseModel):
-    employee_name: str = Field(title="Nombre del empleado")
+    employee_name: str = Field(title="Employee name")
     checklist: list[str] = Field(
-        min_length=1, title="Checklist", description="Pasos a completar durante el onboarding."
+        min_length=1, title="Checklist", description="Steps to complete during onboarding."
     )
 
 
@@ -19,7 +19,7 @@ class OnboardingComplete(BaseModel):
 
 @register(ActionType.ONBOARDING)
 class OnboardingHandler(JsonCompletionHandler):
-    label = "Onboarding de empleado"
+    label = "Complete onboarding"
     creation_model = OnboardingCreate
     payload_model = OnboardingComplete
 

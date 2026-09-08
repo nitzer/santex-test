@@ -7,9 +7,9 @@ from api.models import Action, ActionType
 
 
 class DeploymentReviewCreate(BaseModel):
-    service: str = Field(title="Servicio")
-    version: str = Field(title="Versión")
-    environment: str = Field(title="Entorno", description="Ej. staging, production.")
+    service: str = Field(title="Service")
+    version: str = Field(title="Version")
+    environment: str = Field(title="Environment", description="E.g. staging, production.")
 
 
 class DeploymentReviewComplete(BaseModel):
@@ -19,7 +19,7 @@ class DeploymentReviewComplete(BaseModel):
 
 @register(ActionType.DEPLOYMENT_REVIEW)
 class DeploymentReviewHandler(JsonCompletionHandler):
-    label = "Revisar deploy"
+    label = "Review deployment"
     creation_model = DeploymentReviewCreate
     payload_model = DeploymentReviewComplete
 

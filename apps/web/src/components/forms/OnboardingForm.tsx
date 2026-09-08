@@ -42,12 +42,12 @@ export function OnboardingForm({ action, onCompleted }: CompletionFormProps<'onb
       onSubmit={handleSubmit}
       submitting={submitting}
       error={error}
-      submitLabel="Registrar pasos"
+      submitLabel="Complete onboarding"
       // The API requires at least one step; don't spend a round trip to be told so.
       disabled={completed.size === 0}
     >
       <fieldset className="field">
-        <legend>Pasos completados</legend>
+        <legend>Completed steps</legend>
         {checklist.map((step) => (
           <label className="field field--inline" key={step}>
             <input type="checkbox" checked={completed.has(step)} onChange={() => toggle(step)} />
